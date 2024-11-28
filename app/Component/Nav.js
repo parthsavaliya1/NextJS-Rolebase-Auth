@@ -19,10 +19,16 @@ const Nav = () => {
         <div>My Site</div>
         <div className="flex gap-10">
           <Link href="/">Home</Link>
-          <Link href="/Admin">Admin</Link>
+
+          {/* Conditionally render the Admin link based on role */}
+          {session?.user?.role === 'admin' && (
+            <Link href="/Admin">Admin</Link>
+          )}
+
           <Link href="/ClientMember">Client Member</Link>
           <Link href="/Member">Member</Link>
-          <button onClick={()=>handleLogout()} className="text-white bg-blue-500 px-4 py-2 rounded">
+
+          <button onClick={() => handleLogout()} className="text-white bg-blue-500 px-4 py-2 rounded">
             Logout
           </button>
         </div>
