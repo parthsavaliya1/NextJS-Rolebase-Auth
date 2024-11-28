@@ -20,6 +20,13 @@ You can start editing the page by modifying `app/page.js`. The page auto-updates
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+----> Example Env file <----
+
+GOOGLE_ID=**************298223357122-9**************
+GOOGLE_Secret=*****GOCSPX*****
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=jsdjkfhds
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
