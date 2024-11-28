@@ -8,7 +8,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-  
+
   // Access session information
   const { data: session, status } = useSession();
 
@@ -21,14 +21,14 @@ export default function LoginPage() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-  
+
     try {
       const result = await signIn("credentials", {
         redirect: false,
         email,
         password,
       });
-  
+
       if (result?.error) {
         alert("Invalid email or password");
       } else {
@@ -39,11 +39,18 @@ export default function LoginPage() {
       alert("Something went wrong. Please try again later.");
     }
   };
-  
 
   const handleGoogleLogin = () => {
     signIn("google"); // Trigger Google OAuth login flow
   };
+
+  const handleSignUpRedirect = () => {
+    // Remove callbackUrl from the URL if present
+    const url = new URL(window.location.href);
+    url.searchParams.delete('callbackUrl'); // Remove callbackUrl from the URL
+    router.push(url.pathname); // Navigate to register page without callbackUrl
+  };
+  
 
   return (
     <div className="flex justify-center items-center h-screen">
@@ -88,7 +95,6 @@ export default function LoginPage() {
             >
               Sign In
             </button>
-            
           </div>
         </form>
 
@@ -100,6 +106,18 @@ export default function LoginPage() {
           >
             Login with Google
           </button>
+        </div>
+
+        <div className="text-center mt-4">
+          <p className="text-sm text-gray-600">
+            Don't have an account?{" "}
+            <button
+              onClick={handleSignUpRedirect} // Clicking this button now redirects to /Register folder (page.js inside)
+              className="text-blue-500 hover:text-blue-700"
+            >
+              Sign Up
+            </button>
+          </p>
         </div>
       </div>
     </div>
