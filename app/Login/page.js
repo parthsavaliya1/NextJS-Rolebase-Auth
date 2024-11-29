@@ -44,7 +44,6 @@ export default function LoginPage() {
   const handleSignUpRedirect = () => {
     router.push("/signup");
   };
-  
 
   return (
     <div className="flex justify-center items-center h-screen">

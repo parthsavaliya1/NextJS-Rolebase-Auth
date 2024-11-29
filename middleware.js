@@ -5,12 +5,15 @@ export default withAuth(
   function middleware(req) {
     const url = req.nextUrl.clone();
 
-    // Bypass /signup, /api/auth, and /api/signup paths for session check
     if (url.pathname === "/signup" || url.pathname.startsWith("/api/auth") || url.pathname === "/api/signup") {
       return NextResponse.next();  // Skip middleware for signup and auth routes
     }
 
     const { token } = req.nextauth;
+
+    if (token && req.nextUrl.pathname === "/signup") {
+      return Response.redirect(new URL("/", req.url)); // Redirect to dashboard or another page
+    }
 
     // Protect /Admin routes (ensure user is authenticated and an admin)
     if (!token && req.nextUrl.pathname.startsWith("/Admin")) {
