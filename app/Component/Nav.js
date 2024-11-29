@@ -1,16 +1,15 @@
 "use client"; // Mark this as a client-side component
 
-import { signOut, useSession } from "next-auth/react"; // Use `useSession` for client-side session management
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 
 const Nav = () => {
-  const { data: session } = useSession(); // Get session data client-side
+  const { data: session } = useSession();
 
-  // If the user is not authenticated, return null (you could show login link here instead)
   if (!session) return null;
 
   const handleLogout = async () => {
-    await signOut({ callbackUrl: "/login" }); // Sign out and redirect to login
+    await signOut({ callbackUrl: "/login" });
   };
 
   return (
@@ -20,7 +19,6 @@ const Nav = () => {
         <div className="flex gap-10">
           <Link href="/">Home</Link>
 
-          {/* Conditionally render the Admin link based on role */}
           {session?.user?.role === 'admin' && (
             <Link href="/Admin">Admin</Link>
           )}

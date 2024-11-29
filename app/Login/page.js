@@ -9,13 +9,11 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  // Access session information
   const { data: session, status } = useSession();
 
   useEffect(() => {
-    // Redirect to home page if the user is logged in
     if (status === "authenticated") {
-      router.push("/"); // Redirect to home if logged in
+      router.push("/");
     }
   }, [status, router]);
 
@@ -28,27 +26,23 @@ export default function LoginPage() {
         email,
         password,
       });
-
+      console.log('result', result)
       if (result?.error) {
         alert("Invalid email or password");
       } else {
-        router.push("/"); // Redirect after successful login
+        router.push("/");
       }
     } catch (error) {
-      console.error("Login Error:", error); // Log the error for debugging
+      console.error("Login Error:", error);
       alert("Something went wrong. Please try again later.");
     }
   };
 
   const handleGoogleLogin = () => {
-    signIn("google"); // Trigger Google OAuth login flow
+    signIn("google");
   };
-
   const handleSignUpRedirect = () => {
-    // Remove callbackUrl from the URL if present
-    const url = new URL(window.location.href);
-    url.searchParams.delete('callbackUrl'); // Remove callbackUrl from the URL
-    router.push(url.pathname); // Navigate to register page without callbackUrl
+    router.push("/signup");
   };
   
 
@@ -112,7 +106,7 @@ export default function LoginPage() {
           <p className="text-sm text-gray-600">
             Don't have an account?{" "}
             <button
-              onClick={handleSignUpRedirect} // Clicking this button now redirects to /Register folder (page.js inside)
+              onClick={handleSignUpRedirect}
               className="text-blue-500 hover:text-blue-700"
             >
               Sign Up

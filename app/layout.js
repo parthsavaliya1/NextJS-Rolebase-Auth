@@ -1,4 +1,6 @@
+import connectMongo from "@/lib/mongo";
 import AuthProvider from "./Component/AuthProvider";
+import { MyServerAction } from "./Component/MyApp";
 import Nav from "./Component/Nav";
 import "./css/style.css";
 
@@ -9,11 +11,13 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  connectMongo(); 
   return (
     <html lang="en">
       <AuthProvider>
         <body className="bg-gray-100">
           <Nav />
+          <MyServerAction/>
           <div className="m-2">{children}</div>
         </body>
       </AuthProvider>

@@ -1,8 +1,8 @@
+
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -20,10 +20,18 @@ export default function SignupPage() {
     }
 
     try {
-      // Here, you would typically send the data to the backend to create a user
-      // For demo purposes, assume the user is created successfully.
+      const res = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-      // After successful signup, redirect to login page
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || "Failed to create account");
+        return;
+      }
       alert("Account created successfully. Please login.");
       router.push("/login");
     } catch (error) {
@@ -35,12 +43,18 @@ export default function SignupPage() {
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="w-full max-w-xs">
-        <form onSubmit={handleSignup} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <form
+          onSubmit={handleSignup}
+          className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+        >
           <h1 className="text-center text-2xl font-bold mb-6">Signup</h1>
           {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
-          
+
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="email"
+            >
               Email
             </label>
             <input
@@ -55,7 +69,10 @@ export default function SignupPage() {
           </div>
 
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="password"
+            >
               Password
             </label>
             <input
@@ -70,7 +87,10 @@ export default function SignupPage() {
           </div>
 
           <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="confirm-password">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="confirm-password"
+            >
               Confirm Password
             </label>
             <input
