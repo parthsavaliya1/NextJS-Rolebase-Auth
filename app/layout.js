@@ -3,6 +3,7 @@ import AuthProvider from "./Component/AuthProvider";
 import { MyServerAction } from "./Component/MyApp";
 import Nav from "./Component/Nav";
 import "./css/style.css";
+import initializeRoles from '../lib/initRole';
 
 
 export const metadata = {
@@ -11,7 +12,10 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  connectMongo(); 
+  if (typeof window === 'undefined') {
+    connectMongo(); // Ensures DB is connected when rendering layout
+  }
+  initializeRoles();
   return (
     <html lang="en">
       <AuthProvider>

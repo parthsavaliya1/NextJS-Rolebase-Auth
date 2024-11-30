@@ -1,10 +1,11 @@
+// app/api/auth/signup/route.js
 import connectMongo from "@/lib/mongo";
-import bcrypt from "bcryptjs"; // for password hashing
-import User from "@/models/user"; // Ensure that User model is imported
+import bcrypt from "bcryptjs";
+import User from "../../../models/user";
+import Role from "../../../models/role";
 
 export async function POST(req) {
   const { email, password } = await req.json();
-  console.log('Received request at /api/signup');
 
   if (!email || !password) {
     return new Response(
@@ -15,8 +16,9 @@ export async function POST(req) {
 
   try {
     await connectMongo();
+
+    // Check if user already exists
     const existingUser = await User.findOne({ email });
-    console.log('ex',existingUser)
     if (existingUser) {
       return new Response(
         JSON.stringify({ message: "User already exists" }),
@@ -24,17 +26,26 @@ export async function POST(req) {
       );
     }
 
-    let role = "user";
-    if (email === "psofttechuser@gmail.com") {
-      role = "admin";
+    let roleName = "user";
+    if (email.includes("psofttech")) {
+      roleName = "admin";
     }
 
+    const role = await Role.findOne({ roleName });
+
+    if (!role) {
+      return new Response(
+        JSON.stringify({ message: "Role not found" }),
+        { status: 400 }
+      );
+    }
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 12);
 
     const newUser = new User({
       email,
       password: hashedPassword,
-      role,
+      role: role._id,
       createdAt: new Date(),
     });
 

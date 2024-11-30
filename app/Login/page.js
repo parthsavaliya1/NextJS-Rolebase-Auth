@@ -26,7 +26,6 @@ export default function LoginPage() {
         email,
         password,
       });
-      console.log('result', result)
       if (result?.error) {
         alert("Invalid email or password");
       } else {

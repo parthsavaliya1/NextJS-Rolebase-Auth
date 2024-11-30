@@ -2,6 +2,7 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import User from "../../../../models/user";
+import Role from "../../../../models/role";
 import connectMongo from "@/lib/mongo";
 
 export const options = {
@@ -10,7 +11,6 @@ export const options = {
       clientId: process.env.GOOGLE_ID,
       clientSecret: process.env.GOOGLE_Secret,
       profile(profile) {
-        console.log("Profile Google: ", profile);
 
         let userRole = "user";
 
@@ -26,14 +26,11 @@ export const options = {
               role: userRole,
               createdAt: new Date(),
             });
-            console.log(newUser)
             await newUser.save({ validateBeforeSave: false });
-            console.log("New user created:", newUser);
           } else {
             if (existingUser.role !== userRole) {
               existingUser.role = userRole;
               await existingUser.save();
-              console.log("User role updated:", existingUser);
             }
           }
         }).catch(error => console.error("MongoDB connection error:", error));
@@ -52,24 +49,30 @@ export const options = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        console.log('before user', credentials);
         const user = await User.findOne({ email: credentials.email });
-        console.log('user', user);
 
         if (!user) {
-          console.log("User not found");
           return null;
         }
 
         const isPasswordCorrect = await bcrypt.compare(credentials.password, user.password);
         if (!isPasswordCorrect) {
-          console.log("Invalid password");
+          return null;
+        }
+
+        if (!user.role) {
+          return null;
+        }
+
+        const role = await Role.findById(user.role);
+
+        if (!role) {
           return null;
         }
 
         return {
           email: user.email,
-          role: user.role,
+          role: role ? role.roleName : 'user',
         };
       },
     }),
@@ -89,4 +92,11 @@ export const options = {
       return session;
     },
   },
+  pages: {
+    signIn: "/login", // Custom login page
+    error: "/error", // Custom error page (if needed)
+    // After a successful login, NextAuth will redirect to the homepage by default
+    // If you want to change that, you can set the redirect URL here:
+    // home: "/home"  // Example, redirect to home page after successful login
+  }
 };
