@@ -20,7 +20,6 @@ export const options = {
 
         connectMongo().then(async () => {
           const existingUser = await User.findOne({ email: profile.email });
-        console.log(existingUser)
           if (!existingUser) {
             const newUser = new User({
               email: profile.email,
@@ -68,27 +67,9 @@ export const options = {
           return null;
         }
 
-        if (user) {
-          console.log(user.role)
-          if (!user.role) {
-            console.log('Role missing, updating...');
-            user.role = credentials.email.includes("psofttech") ? "admin" : "user";
-            await user.save();
-            console.log('Updated user:', user);
-          } else {
-            console.log('Role already set:', user.role);
-          }
-        }
-        let userRole = user.role;
-        if (credentials.email.includes("psofttech")) {
-          userRole = "admin";
-        } else {
-          userRole = "user";
-        }
-
         return {
           email: user.email,
-          role: userRole,
+          role: user.role,
         };
       },
     }),
