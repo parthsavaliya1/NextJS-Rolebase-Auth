@@ -85,6 +85,15 @@ export default function RoleManagement() {
           ))}
         </tbody>
       </table>
+
+      <div className="mb-4 mt-10">
+        <button
+          onClick={() => router.push('/Admin/createpage')} // Navigate to the create role page
+          className="px-4 py-2 bg-green-500 text-white rounded-md shadow hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
+        >
+         Create Page
+        </button>
+      </div>
     </div>
   );
 }
