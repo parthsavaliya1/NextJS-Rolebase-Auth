@@ -2,26 +2,34 @@ import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
 export default withAuth(
-  function middleware(req) {
+  async function middleware(req) {
+    const { token } = req.nextauth;
     const url = req.nextUrl.clone();
 
-    if (url.pathname === "/signup" || url.pathname.startsWith("/api/auth") || url.pathname === "/api/signup") {
-      return NextResponse.next();  // Skip middleware for signup and auth routes
+    // Bypass certain routes (e.g., login, signup, public assets)
+    if (["/Login", "/signup", "/Denied"].includes(url.pathname) || url.pathname.startsWith("/api")) {
+      return NextResponse.next();
     }
 
-    const { token } = req.nextauth;
-
-    if (token && req.nextUrl.pathname === "/signup") {
-      return Response.redirect(new URL("/", req.url)); // Redirect to dashboard or another page
-    }
-
-    // Protect /Admin routes (ensure user is authenticated and an admin)
-    if (!token && req.nextUrl.pathname.startsWith("/Admin")) {
+    if (!token) {
+      // Redirect unauthenticated users to the login page
       return NextResponse.redirect(new URL("/Login", req.url));
     }
 
-    // Check for admin role for /Admin routes
-    if (req.nextUrl.pathname.startsWith("/Admin") && token?.role !== "admin") {
+    console.log(token)
+
+    const routePath = req.nextUrl.pathname;
+
+    // Role-based access checks
+    if (routePath.startsWith("/Admin") && !token?.permissions?.admin.includes("write")) {
+      return NextResponse.redirect(new URL("/Denied", req.url));
+    }
+
+    if (routePath.startsWith("/ClientMember") && !token?.permissions?.user.includes("read")) {
+      return NextResponse.redirect(new URL("/Denied", req.url));
+    }
+
+    if (routePath.startsWith("/product") && !token?.permissions?.product.includes("write")) {
       return NextResponse.redirect(new URL("/Denied", req.url));
     }
 
@@ -29,7 +37,7 @@ export default withAuth(
   },
   {
     callbacks: {
-      authorized: ({ token }) => !!token, // Ensure user is authenticated
+      authorized: ({ token }) => !!token, // Check if the user is authenticated
     },
     pages: {
       signIn: "/Login", // Redirect to login if not authenticated
@@ -39,7 +47,9 @@ export default withAuth(
 
 export const config = {
   matcher: [
-    "/Admin/:path*", // Protect admin routes
-    "/((?!Login|Denied|_next|api/auth|signup|api/signup).*)" // Exclude /signup, /api/auth, and /api/signup from middleware
+    "/Admin/:path*",
+    "/ClientMember/:path*",
+    "/Member/:path*",
+    "/((?!Login|Denied|_next|api/auth|signup|api/signup).*)",
   ],
 };

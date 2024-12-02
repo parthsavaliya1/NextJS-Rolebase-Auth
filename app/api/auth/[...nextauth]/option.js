@@ -10,35 +10,42 @@ export const options = {
     GoogleProvider({
       clientId: process.env.GOOGLE_ID,
       clientSecret: process.env.GOOGLE_Secret,
-      profile(profile) {
-
-        let userRole = "user";
-
+      profile: async (profile) => {
+        let userRoleName = "user";
         if (profile?.email === "psofttechuser@gmail.com") {
-          userRole = "admin";
+          userRoleName = "admin";
         }
-
-        connectMongo().then(async () => {
-          const existingUser = await User.findOne({ email: profile.email });
-          if (!existingUser) {
-            const newUser = new User({
-              email: profile.email,
-              role: userRole,
-              createdAt: new Date(),
-            });
-            await newUser.save({ validateBeforeSave: false });
-          } else {
-            if (existingUser.role !== userRole) {
-              existingUser.role = userRole;
-              await existingUser.save();
-            }
+        await connectMongo();
+        const role = await Role.findOne({ roleName: userRoleName });
+        if (!role) {
+          console.error(`Role ${userRoleName} not found in the database.`);
+          return {
+            ...profile,
+            id: profile.sub,
+            role: userRoleName,
+          };
+        }
+      
+        const existingUser = await User.findOne({ email: profile.email });
+        if (!existingUser) {
+          const newUser = new User({
+            email: profile.email,
+            role: role._id,
+            createdAt: new Date(),
+          });
+          await newUser.save({ validateBeforeSave: false });
+        } else {
+          if (existingUser.role.toString() !== role._id.toString()) {
+            existingUser.role = role._id;
+            await existingUser.save();
           }
-        }).catch(error => console.error("MongoDB connection error:", error));
-
+        }
+      
         return {
           ...profile,
           id: profile.sub,
-          role: userRole,
+          role: userRoleName,
+          permissions: role.permissions,
         };
       },
     }),
@@ -73,6 +80,7 @@ export const options = {
         return {
           email: user.email,
           role: role ? role.roleName : 'user',
+          permissions: role.permissions,
         };
       },
     }),
@@ -82,12 +90,14 @@ export const options = {
     async jwt({ token, user }) {
       if (user) {
         token.role = user.role;
+        token.permissions = user.permissions;
       }
       return token;
     },
     async session({ session, token }) {
       if (session?.user) {
         session.user.role = token.role;
+        session.user.permissions = token.permissions;
       }
       return session;
     },
