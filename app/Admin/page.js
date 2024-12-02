@@ -52,6 +52,17 @@ export default function RoleManagement() {
 
       {/* Roles Table */}
       <h2 className="text-2xl font-semibold text-gray-800 mb-4 mt-8">Roles</h2>
+      
+      {/* Add Role Button */}
+      <div className="mb-4">
+        <button
+          onClick={() => router.push('/Admin/createrole')} // Navigate to the create role page
+          className="px-4 py-2 bg-green-500 text-white rounded-md shadow hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
+        >
+          Add Role
+        </button>
+      </div>
+
       <table className="min-w-full table-auto border-collapse border border-gray-200 shadow-lg rounded-lg overflow-hidden">
         <thead className="bg-gray-100 text-gray-600">
           <tr>

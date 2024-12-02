@@ -18,6 +18,7 @@ const Nav = () => {
         <div>My Site</div>
         <div className="flex gap-10">
           <Link href="/">Home</Link>
+          <Link href="/product">Product</Link>
 
           {session?.user?.role === 'admin' && (
             <Link href="/Admin">Admin</Link>
