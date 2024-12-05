@@ -1,6 +1,21 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
+// Check if the user has the required permissions for the route
+const checkPermissions = (routePath, permissions) => {
+  // Extract the first part of the route path (e.g., "admin", "product")
+  const routeName = routePath.split("/")[1].toLowerCase();
+
+  // Check if the routeName exists in permissions and if the user has read/write permissions
+  if (permissions[routeName]) {
+    return (
+      permissions[routeName].includes("read") || permissions[routeName].includes("write")
+    );
+  }
+
+  return false; // Default to false if no matching permissions found
+};
+
 export default withAuth(
   async function middleware(req) {
     const { token } = req.nextauth;
@@ -16,19 +31,18 @@ export default withAuth(
       return NextResponse.redirect(new URL("/Login", req.url));
     }
 
+    const publicPages = ["/", "/Client", "/Member"];
+    if (publicPages.includes(url.pathname) || url.pathname.startsWith("/api") || ["Login", "signup", "Denied"].includes(url.pathname)) {
+      return NextResponse.next();
+    }
+
+    console.log("Token Permissions:", token?.permissions); // Log permissions for debugging
 
     const routePath = req.nextUrl.pathname;
 
-    // Role-based access checks
-    if (routePath.startsWith("/Admin") && !token?.permissions?.admin.includes("write")) {
-      return NextResponse.redirect(new URL("/Denied", req.url));
-    }
-
-    if (routePath.startsWith("/ClientMember") && !token?.permissions?.user.includes("read")) {
-      return NextResponse.redirect(new URL("/Denied", req.url));
-    }
-
-    if (routePath.startsWith("/product") && !token?.permissions?.product.includes("write")) {
+    // Perform role-based access checks dynamically
+    if (!checkPermissions(routePath, token.permissions)) {
+      console.log(`Access denied for route: ${routePath}`); // Log denied routes
       return NextResponse.redirect(new URL("/Denied", req.url));
     }
 
@@ -49,6 +63,9 @@ export const config = {
     "/Admin/:path*",
     "/ClientMember/:path*",
     "/Member/:path*",
+    "/product/:path*",
+    "/category/:path*",
+    "/view/:path*",
     "/((?!Login|Denied|_next|api/auth|signup|api/signup).*)",
   ],
 };

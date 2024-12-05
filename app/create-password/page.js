@@ -44,12 +44,8 @@ export default function CreatePasswordPage() {
           });
 
       const data = await response.json();
-      console.log(response)
       if (response.ok) {
-        // Set the loading state to false
         setLoading(false);
-      
-        // Manually trigger a sign-in to update the token and session
         const result = await signIn("credentials", {
           email: session.user.email,
           password: password,  // You just set the password
@@ -57,7 +53,6 @@ export default function CreatePasswordPage() {
         });
 
         console.log('result',result)
-      
         if (result?.error) {
           setError(result.error);
         } else {
