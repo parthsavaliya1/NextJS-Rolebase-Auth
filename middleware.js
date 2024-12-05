@@ -16,7 +16,6 @@ export default withAuth(
       return NextResponse.redirect(new URL("/Login", req.url));
     }
 
-    console.log(token)
 
     const routePath = req.nextUrl.pathname;
 

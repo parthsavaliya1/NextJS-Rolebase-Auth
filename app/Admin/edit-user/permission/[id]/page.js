@@ -45,14 +45,10 @@ const EditPermission = () => {
     const data = await response.json();
 
     if (response.ok) {
-      console.log("Permissions updated successfully", data);
-      // Redirect to the /Admin page after successful update
       router.push('/Admin');
     } else {
       console.error("Failed to update permissions:", data.error);
     }
-
-    console.log("Updated Permissions: ", permissions);
   };
 
   return (

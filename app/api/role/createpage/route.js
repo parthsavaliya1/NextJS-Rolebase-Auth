@@ -29,7 +29,6 @@ export async function POST(req) {
           { $set: { [`permissions.${pageName}`]: rolePermissions } },
           { new: true }
         );
-        console.log("After Update:", updateResult.permissions);
       }
 
     return new Response(
