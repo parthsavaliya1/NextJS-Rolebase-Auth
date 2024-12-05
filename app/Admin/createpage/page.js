@@ -6,6 +6,7 @@ export default function CreatePage() {
   const [roles, setRoles] = useState([]);
   const [pageName, setPageName] = useState("");
   const [permissions, setPermissions] = useState({});
+  const [errorMessage, setErrorMessage] = useState(""); // State for error message
   const router = useRouter();
 
   useEffect(() => {
@@ -22,7 +23,18 @@ export default function CreatePage() {
       });
   }, []);
 
-  const handleSave = () => {
+  const handleSave = (e) => {
+    e.preventDefault(); // Prevent default form submission
+
+    // Validate that the page name is not empty
+    if (!pageName.trim()) {
+      setErrorMessage("Page name is required.");
+      return; // Stop further execution if the page name is blank
+    }
+
+    // Clear any previous error message
+    setErrorMessage("");
+
     // Generate the payload in the desired format
     const payload = [];
     roles.forEach((role) => {
@@ -35,12 +47,12 @@ export default function CreatePage() {
         });
       }
     });
-  
+
     const newPageData = {
       pageName,
       permissions: payload, // Updated payload format
     };
-  
+
     // Send a request to the backend to save the new page and permissions
     fetch('/api/role/createpage', {
       method: 'POST',
@@ -51,16 +63,14 @@ export default function CreatePage() {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log('data')
         if (data.success) {
-        //   router.push('/Admin'); // Redirect to the role management page after saving
+          router.push('/Admin'); // Redirect to the role management page after saving
         } else {
-          alert("Failed to create the page");
+          setErrorMessage("Failed to create the page.");
         }
       });
   };
   
-
   const handlePermissionChange = (roleName, permissionType) => {
     setPermissions((prevPermissions) => {
       const updatedPermissions = { ...prevPermissions };
@@ -75,28 +85,34 @@ export default function CreatePage() {
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto bg-white rounded-lg shadow-lg">
-      <h1 className="text-3xl font-semibold mb-6 text-gray-900">Create Page</h1>
+    <div className="p-8 max-w-4xl mx-auto bg-white rounded-lg shadow-lg">
+      {/* Page Title */}
+      <h1 className="text-2xl font-semibold mb-8 text-gray-900">Create Page</h1>
       
       {/* Page Name Input */}
-      <div className="mb-6">
-        <label className="block text-gray-700 text-lg mb-2">Page Name</label>
+      <div className="mb-8">
+        <label className="block text-gray-700 text-base mb-2">Page Name</label>
         <input
           type="text"
           value={pageName}
           onChange={(e) => setPageName(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="px-4 py-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           required
         />
       </div>
 
+      {/* Error Message */}
+      {errorMessage && (
+        <div className="text-red-600 text-sm mb-4">{errorMessage}</div>
+      )}
+
       {/* Role Permissions */}
-      <div className="mb-6">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Assign Permissions</h2>
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold text-gray-800 mb-6">Assign Permissions</h2>
         {roles.map((role) => (
-          <div key={role._id} className="mb-6">
-            <h3 className="text-xl font-medium text-gray-700">{role.roleName}</h3>
-            <div className="space-x-6 mt-4">
+          <div key={role._id} className="mb-8">
+            <h3 className="text-lg font-medium text-gray-700">{role.roleName}</h3>
+            <div className="mt-4 space-x-6 flex items-center">
               <div className="inline-flex items-center space-x-2">
                 <input
                   type="checkbox"
@@ -131,10 +147,10 @@ export default function CreatePage() {
       </div>
 
       {/* Save Button */}
-      <div className="mt-8 text-right">
+      <div className="mt-10 text-right">
         <button
           onClick={handleSave}
-          className="px-6 py-3 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
+          className="px-8 py-4 bg-blue-500 text-white text-lg font-semibold rounded-md shadow-md hover:bg-blue-600 transition duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
         >
           Save
         </button>
