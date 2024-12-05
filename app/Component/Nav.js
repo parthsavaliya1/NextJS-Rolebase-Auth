@@ -66,7 +66,7 @@ const Nav = () => {
 
           {session?.user?.role === "admin" && (
             <Link
-              href="/Admin"
+              href="/admin"
               className="block px-4 py-2 text-gray-700 hover:bg-blue-500 hover:text-white rounded sm:mt-0 no-underline"
             >
               Admin
@@ -74,13 +74,13 @@ const Nav = () => {
           )}
 
           <Link
-            href="/ClientMember"
+            href="/clientmember"
             className="block px-4 py-2 text-gray-700 hover:bg-blue-500 hover:text-white rounded sm:mt-0 no-underline"
           >
             Client Member
           </Link>
           <Link
-            href="/Member"
+            href="/member"
             className="block px-4 py-2 text-gray-700 hover:bg-blue-500 hover:text-white rounded sm:mt-0 no-underline"
           >
             Member

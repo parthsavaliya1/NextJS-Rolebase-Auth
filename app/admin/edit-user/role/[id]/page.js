@@ -49,7 +49,7 @@ export default function EditUser() {
     if (response.ok) {
       console.log("User updated successfully", data);
       // Redirect to the /Admin page after successful update
-      router.push('/Admin');
+      router.push('/admin');
     } else {
       console.error("Failed to update user:", data.error);
     }

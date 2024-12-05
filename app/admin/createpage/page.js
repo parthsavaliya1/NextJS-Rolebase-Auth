@@ -64,7 +64,7 @@ export default function CreatePage() {
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
-          router.push('/Admin'); // Redirect to the role management page after saving
+          router.push('/admin'); // Redirect to the role management page after saving
         } else {
           setErrorMessage("Failed to create the page.");
         }

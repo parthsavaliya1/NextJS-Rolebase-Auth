@@ -44,7 +44,7 @@ export default function RoleManagement() {
                   <td className="px-6 py-4">{user?.role?.roleName}</td>
                   <td className="px-6 py-4">
                     <button
-                      onClick={() => router.push(`/Admin/edit-user/role/${user._id}`)}
+                      onClick={() => router.push(`/admin/edit-user/role/${user._id}`)}
                       className="px-4 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 transition"
                     >
                       Edit Role
@@ -62,7 +62,7 @@ export default function RoleManagement() {
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-semibold text-gray-800">Roles</h2>
           <button
-            onClick={() => router.push("/Admin/createrole")}
+            onClick={() => router.push("/admin/createrole")}
             className="px-4 py-2 bg-green-500 text-white rounded-md shadow hover:bg-green-600 transition"
           >
             Add Role
@@ -84,7 +84,7 @@ export default function RoleManagement() {
                 >
                   <td className="px-6 py-4">{role.roleName}</td>
                   <td className="px-6 py-4">
-                    <Link href={`/Admin/edit-user/permission/${role._id}`}>
+                    <Link href={`/admin/edit-user/permission/${role._id}`}>
                       <button className="px-4 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 transition">
                         Edit Permission
                       </button>
@@ -100,7 +100,7 @@ export default function RoleManagement() {
       {/* Create Page */}
       <section className="mt-12">
         <button
-          onClick={() => router.push("/Admin/createpage")}
+          onClick={() => router.push("/admin/createpage")}
           className="px-6 py-3 bg-green-500 text-white font-semibold rounded-md shadow hover:bg-green-600 transition"
         >
           Create Page

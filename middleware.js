@@ -1,12 +1,16 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
-// Check if the user has the required permissions for the route
 const checkPermissions = (routePath, permissions) => {
-  // Extract the first part of the route path (e.g., "admin", "product")
-  const routeName = routePath.split("/")[1].toLowerCase();
+  // Ensure that we remove the leading "/" and split by "/"
+  const routeName = routePath.replace(/^\/+/, '').split("/")[0]?.trim(); // Remove any leading '/' and get the first part
+  console.log('routepath', routePath,routeName, permissions);
 
-  // Check if the routeName exists in permissions and if the user has read/write permissions
+  if (!routeName) {
+    console.log('Invalid route path');
+    return false;
+  }
+
   if (permissions[routeName]) {
     return (
       permissions[routeName].includes("read") || permissions[routeName].includes("write")
@@ -16,13 +20,16 @@ const checkPermissions = (routePath, permissions) => {
   return false; // Default to false if no matching permissions found
 };
 
+
+
+
 export default withAuth(
   async function middleware(req) {
     const { token } = req.nextauth;
     const url = req.nextUrl.clone();
 
     // Bypass certain routes (e.g., login, signup, public assets)
-    if (["/Login", "/signup", "/Denied"].includes(url.pathname) || url.pathname.startsWith("/api")) {
+    if (["/Login", "/signup", "/denied"].includes(url.pathname) || url.pathname.startsWith("/api")) {
       return NextResponse.next();
     }
 
@@ -31,8 +38,8 @@ export default withAuth(
       return NextResponse.redirect(new URL("/Login", req.url));
     }
 
-    const publicPages = ["/", "/Client", "/Member"];
-    if (publicPages.includes(url.pathname) || url.pathname.startsWith("/api") || ["Login", "signup", "Denied"].includes(url.pathname)) {
+    const publicPages = ["/", "/Client", "/member"];
+    if (publicPages.includes(url.pathname) || url.pathname.startsWith("/api") || ["Login", "signup", "denied"].includes(url.pathname)) {
       return NextResponse.next();
     }
 
@@ -43,7 +50,7 @@ export default withAuth(
     // Perform role-based access checks dynamically
     if (!checkPermissions(routePath, token.permissions)) {
       console.log(`Access denied for route: ${routePath}`); // Log denied routes
-      return NextResponse.redirect(new URL("/Denied", req.url));
+      return NextResponse.redirect(new URL("/denied", req.url));
     }
 
     return NextResponse.next();
@@ -60,12 +67,12 @@ export default withAuth(
 
 export const config = {
   matcher: [
-    "/Admin/:path*",
-    "/ClientMember/:path*",
-    "/Member/:path*",
+    "/admin/:path*",
+    "/clientmember/:path*",
+    "/member/:path*",
     "/product/:path*",
     "/category/:path*",
     "/view/:path*",
-    "/((?!Login|Denied|_next|api/auth|signup|api/signup).*)",
+    "/((?!Login|denied|_next|api/auth|signup|api/signup).*)",
   ],
 };

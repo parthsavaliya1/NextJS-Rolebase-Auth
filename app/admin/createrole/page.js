@@ -49,7 +49,7 @@ export default function CreateRole() {
       });
 
       if (response.ok) {
-        router.push("/Admin");
+        router.push("/admin");
       } else {
         setErrorMessage("Failed to create role.");
       }

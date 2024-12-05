@@ -45,7 +45,7 @@ const EditPermission = () => {
     const data = await response.json();
 
     if (response.ok) {
-      router.push('/Admin');
+      router.push('/admin');
     } else {
       console.error("Failed to update permissions:", data.error);
     }
